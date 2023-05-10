@@ -10,6 +10,7 @@ const nextConfig = {
         pathname: "/battledata/img/**",
       },
     ],
+    unoptimized: true,
   },
 };
 
