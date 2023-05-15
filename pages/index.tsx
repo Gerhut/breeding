@@ -2,12 +2,17 @@ import axios from "axios";
 import { Fragment } from "react";
 import Image from "next/image";
 import { GetStaticPropsContext, GetStaticPropsResult } from "next";
+import localFont from "next/font/local";
 
 import pokemon from "./pokemon.json";
 import type_ from "./type.json";
 import tokusei_ from "./tokusei.json";
 import seikaku_ from "./seikaku.json";
 import waza_ from "./waza.json";
+
+const zpixFont = localFont({
+  src: "./zpix.ttf",
+});
 
 function getPokemonIcon(id: string, form: string) {
   return (
@@ -117,59 +122,65 @@ type Props = {
 
 export default function IndexPage(props: Props) {
   return (
-    <main className="mx-auto grid grid-cols-3 gap-y-2 py-2">
-      {Object.keys(props).map((id) =>
-        Object.keys(props[id]).map((form) => (
-          <Fragment key={`${id}-${form}`}>
-            <div>
-              <Image
-                src={getPokemonIcon(id, form)}
-                alt={props[id][form]["name"]}
-                width={64}
-                height={64}
-                className="mx-auto"
-              />
-              <h2 className="text-center">
-                {props[id][form]["name"]}
-                {props[id][form]["form"] !== undefined && (
-                  <span className="text-sm">
-                    <br />({props[id][form]["form"]})
-                  </span>
-                )}
-              </h2>
-            </div>
-            <div className="text-center">
-              <p>
-                <Image
-                  src={getTerastalIcon(props[id][form]["terastal"]["id"])}
-                  alt={props[id][form]["terastal"]["name"]}
-                  width={16}
-                  height={16}
-                  className="inline-block"
-                />
-                {props[id][form]["terastal"]["name"]}
-              </p>
-              <p>{props[id][form]["tokusei"]["name"]}</p>
-              <p>
-                <Image
-                  src={getItemIcon(props[id][form]["motimono"]["id"])}
-                  alt={props[id][form]["motimono"]["name"]}
-                  width={16}
-                  height={16}
-                  className="inline-block"
-                />
-                {props[id][form]["motimono"]["name"]}
-              </p>
-              <p>{props[id][form]["seikaku"]["name"]}</p>
-            </div>
-            <div className="text-center">
-              {props[id][form]["waza"].slice(0, 4).map((waza) => (
-                <p key={waza["id"]}>{waza["name"]}</p>
-              ))}
-            </div>
-          </Fragment>
-        ))
-      )}
+    <main className={`p-4 ${zpixFont.className}`}>
+      <table className="nes-table is-bordered mx-auto">
+        <tbody>
+          {Object.keys(props).map((id) =>
+            Object.keys(props[id]).map((form) => (
+              <tr key={`${id}-${form}`}>
+                <td>
+                  <Image
+                    src={getPokemonIcon(id, form)}
+                    alt={props[id][form]["name"]}
+                    width={64}
+                    height={64}
+                    className="mx-auto"
+                  />
+                  <h2 className="text-center">
+                    {props[id][form]["name"]}
+                    {props[id][form]["form"] !== undefined && (
+                      <span className="text-sm">
+                        <br />({props[id][form]["form"]})
+                      </span>
+                    )}
+                  </h2>
+                </td>
+                <td>
+                  <Image
+                    src={getTerastalIcon(props[id][form]["terastal"]["id"])}
+                    alt={props[id][form]["terastal"]["name"]}
+                    width={16}
+                    height={16}
+                    className="inline-block"
+                  />
+                  {props[id][form]["terastal"]["name"]}
+                  <br />
+                  {props[id][form]["tokusei"]["name"]}
+                  <br />
+                  <Image
+                    src={getItemIcon(props[id][form]["motimono"]["id"])}
+                    alt={props[id][form]["motimono"]["name"]}
+                    width={16}
+                    height={16}
+                    className="inline-block"
+                  />
+                  {props[id][form]["motimono"]["name"]}
+                  <br />
+                  {props[id][form]["seikaku"]["name"]}
+                </td>
+                <td>
+                  {props[id][form]["waza"].slice(0, 4).map((waza) => (
+                    <Fragment key={waza.id}>
+                      {waza["name"]}
+                      <br />
+                    </Fragment>
+                  ))}
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
     </main>
   );
 }
