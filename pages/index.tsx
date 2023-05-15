@@ -94,19 +94,19 @@ type Props = {
       terastal: {
         id: string;
         name: string;
-      }[];
+      };
       tokusei: {
         id: string;
         name: string;
-      }[];
+      };
       motimono: {
         id: string;
         name: string;
-      }[];
+      };
       seikaku: {
         id: string;
         name: string;
-      }[];
+      };
       waza: {
         id: string;
         name: string;
@@ -119,61 +119,56 @@ export default function IndexPage(props: Props) {
   return (
     <main className="mx-auto grid grid-cols-3 gap-y-2 py-2">
       {Object.keys(props).map((id) =>
-        Object.keys(props[id]).map(
-          (form) =>
-            props[id][form]["terastal"].length > 0 && (
-              <Fragment key={`${id}-${form}`}>
-                <div>
-                  <Image
-                    src={getPokemonIcon(id, form)}
-                    alt={props[id][form]["name"]}
-                    width={64}
-                    height={64}
-                    className="mx-auto"
-                  />
-                  <h2 className="text-center">
-                    {props[id][form]["name"]}
-                    {props[id][form]["form"] !== undefined && (
-                      <span className="text-sm">
-                        <br />({props[id][form]["form"]})
-                      </span>
-                    )}
-                  </h2>
-                </div>
-                <div className="text-center">
-                  <p>
-                    <Image
-                      src={getTerastalIcon(
-                        props[id][form]["terastal"][0]["id"]
-                      )}
-                      alt={props[id][form]["terastal"][0]["name"]}
-                      width={16}
-                      height={16}
-                      className="inline-block"
-                    />
-                    {props[id][form]["terastal"][0]["name"]}
-                  </p>
-                  <p>{props[id][form]["tokusei"][0]["name"]}</p>
-                  <p>
-                    <Image
-                      src={getItemIcon(props[id][form]["motimono"][0]["id"])}
-                      alt={props[id][form]["motimono"][0]["name"]}
-                      width={16}
-                      height={16}
-                      className="inline-block"
-                    />
-                    {props[id][form]["motimono"][0]["name"]}
-                  </p>
-                  <p>{props[id][form]["seikaku"][0]["name"]}</p>
-                </div>
-                <div className="text-center">
-                  {props[id][form]["waza"].slice(0, 4).map((waza) => (
-                    <p key={waza["id"]}>{waza["name"]}</p>
-                  ))}
-                </div>
-              </Fragment>
-            )
-        )
+        Object.keys(props[id]).map((form) => (
+          <Fragment key={`${id}-${form}`}>
+            <div>
+              <Image
+                src={getPokemonIcon(id, form)}
+                alt={props[id][form]["name"]}
+                width={64}
+                height={64}
+                className="mx-auto"
+              />
+              <h2 className="text-center">
+                {props[id][form]["name"]}
+                {props[id][form]["form"] !== undefined && (
+                  <span className="text-sm">
+                    <br />({props[id][form]["form"]})
+                  </span>
+                )}
+              </h2>
+            </div>
+            <div className="text-center">
+              <p>
+                <Image
+                  src={getTerastalIcon(props[id][form]["terastal"]["id"])}
+                  alt={props[id][form]["terastal"]["name"]}
+                  width={16}
+                  height={16}
+                  className="inline-block"
+                />
+                {props[id][form]["terastal"]["name"]}
+              </p>
+              <p>{props[id][form]["tokusei"]["name"]}</p>
+              <p>
+                <Image
+                  src={getItemIcon(props[id][form]["motimono"]["id"])}
+                  alt={props[id][form]["motimono"]["name"]}
+                  width={16}
+                  height={16}
+                  className="inline-block"
+                />
+                {props[id][form]["motimono"]["name"]}
+              </p>
+              <p>{props[id][form]["seikaku"]["name"]}</p>
+            </div>
+            <div className="text-center">
+              {props[id][form]["waza"].slice(0, 4).map((waza) => (
+                <p key={waza["id"]}>{waza["name"]}</p>
+              ))}
+            </div>
+          </Fragment>
+        ))
       )}
     </main>
   );
@@ -249,21 +244,44 @@ export async function getStaticProps(
             temoti["form"] = zkn_form[zkn_form_key];
           }
 
-          for (const terastal of temoti["terastal"]) {
+          const terastal = (temoti["terastal"] = temoti["terastal"][0]);
+          if (terastal) {
             terastal["name"] = type_[terastal["id"]];
+          } else {
+            delete pdetail[id][form];
+            continue;
           }
-          for (const tokusei of temoti["tokusei"]) {
+
+          const tokusei = (temoti["tokusei"] = temoti["tokusei"][0]);
+          if (tokusei) {
             tokusei["name"] = (tokusei_ as any)[tokusei["id"]];
+          } else {
+            delete pdetail[id][form];
+            continue;
           }
-          for (const motimono of temoti["motimono"]) {
+
+          const motimono = (temoti["motimono"] = temoti["motimono"][0]);
+          if (motimono) {
             motimono["name"] = itemname[motimono["id"]];
+          } else {
+            delete pdetail[id][form];
+            continue;
           }
-          for (const seikaku of temoti["seikaku"]) {
+
+          const seikaku = (temoti["seikaku"] = temoti["seikaku"][0]);
+          if (seikaku) {
             seikaku["name"] = (seikaku_ as any)[seikaku["id"]];
+          } else {
+            delete pdetail[id][form];
+            continue;
           }
+
           for (const waza of temoti["waza"]) {
             waza["name"] = (waza_ as any)[waza["id"]];
           }
+        }
+        if (Object.keys(pdetail[id]).length === 0) {
+          delete pdetail[id];
         }
       }
     }
