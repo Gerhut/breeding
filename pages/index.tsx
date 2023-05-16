@@ -129,21 +129,23 @@ export default function IndexPage(props: Props) {
             Object.keys(props[id]).map((form) => (
               <tr key={`${id}-${form}`}>
                 <td>
-                  <Image
-                    src={getPokemonIcon(id, form)}
-                    alt={props[id][form]["name"]}
-                    width={64}
-                    height={64}
-                    className="mx-auto"
-                  />
-                  <h2 className="text-center">
-                    {props[id][form]["name"]}
-                    {props[id][form]["form"] !== undefined && (
-                      <span className="text-sm">
-                        <br />({props[id][form]["form"]})
-                      </span>
-                    )}
-                  </h2>
+                  <a href={`https://wiki.52poke.com/wiki/${encodeURIComponent(props[id][form]["name"])}`}>
+                    <Image
+                      src={getPokemonIcon(id, form)}
+                      alt={props[id][form]["name"]}
+                      width={64}
+                      height={64}
+                      className="mx-auto"
+                    />
+                    <h2 className="text-center">
+                      {props[id][form]["name"]}
+                      {props[id][form]["form"] !== undefined && (
+                        <span className="text-sm">
+                          <br />({props[id][form]["form"]})
+                        </span>
+                      )}
+                    </h2>
+                  </a>
                 </td>
                 <td>
                   <Image
