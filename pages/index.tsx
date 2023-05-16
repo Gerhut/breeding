@@ -129,7 +129,13 @@ export default function IndexPage(props: Props) {
             Object.keys(props[id]).map((form) => (
               <tr key={`${id}-${form}`}>
                 <td>
-                  <a href={`https://wiki.52poke.com/wiki/${encodeURIComponent(props[id][form]["name"])}`}>
+                  <a
+                    href={`https://wiki.52poke.com/wiki/${encodeURIComponent(
+                      props[id][form]["name"]
+                    )}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
                     <Image
                       src={getPokemonIcon(id, form)}
                       alt={props[id][form]["name"]}
@@ -148,32 +154,72 @@ export default function IndexPage(props: Props) {
                   </a>
                 </td>
                 <td>
-                  <Image
-                    src={getTerastalIcon(props[id][form]["terastal"]["id"])}
-                    alt={props[id][form]["terastal"]["name"]}
-                    width={16}
-                    height={16}
-                    className="inline-block"
-                  />
-                  {props[id][form]["terastal"]["name"]}
+                  <a
+                    href={`https://wiki.52poke.com/wiki/${encodeURIComponent(
+                      props[id][form]["terastal"]["name"]
+                    )}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <Image
+                      src={getTerastalIcon(props[id][form]["terastal"]["id"])}
+                      alt={props[id][form]["terastal"]["name"]}
+                      width={16}
+                      height={16}
+                      className="inline-block"
+                    />
+                    {props[id][form]["terastal"]["name"]}
+                  </a>
                   <br />
-                  {props[id][form]["tokusei"]["name"]}
+                  <a
+                    href={`https://wiki.52poke.com/wiki/${encodeURIComponent(
+                      props[id][form]["tokusei"]["name"]
+                    )}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {props[id][form]["tokusei"]["name"]}
+                  </a>
                   <br />
-                  <Image
-                    src={getItemIcon(props[id][form]["motimono"]["id"])}
-                    alt={props[id][form]["motimono"]["name"]}
-                    width={16}
-                    height={16}
-                    className="inline-block"
-                  />
-                  {props[id][form]["motimono"]["name"]}
+                  <a
+                    href={`https://wiki.52poke.com/wiki/${encodeURIComponent(
+                      props[id][form]["motimono"]["name"]
+                    )}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <Image
+                      src={getItemIcon(props[id][form]["motimono"]["id"])}
+                      alt={props[id][form]["motimono"]["name"]}
+                      width={16}
+                      height={16}
+                      className="inline-block"
+                    />
+                    {props[id][form]["motimono"]["name"]}
+                  </a>
                   <br />
-                  {props[id][form]["seikaku"]["name"]}
+                  <a
+                    href={`https://wiki.52poke.com/wiki/${encodeURIComponent(
+                      "性格"
+                    )}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {props[id][form]["seikaku"]["name"]}
+                  </a>
                 </td>
                 <td>
                   {props[id][form]["waza"].slice(0, 4).map((waza) => (
                     <Fragment key={waza.id}>
-                      {waza["name"]}
+                      <a
+                        href={`https://wiki.52poke.com/wiki/${encodeURIComponent(
+                          waza["name"]
+                        )}`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {waza["name"]}
+                      </a>
                       <br />
                     </Fragment>
                   ))}
@@ -289,7 +335,8 @@ export async function getStaticProps(
             continue;
           }
 
-          for (const waza of temoti["waza"]) {
+          const wazas = (temoti["waza"] = temoti["waza"].slice(0, 4));
+          for (const waza of wazas) {
             waza["name"] = (waza_ as any)[waza["id"]];
           }
         }
