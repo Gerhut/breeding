@@ -274,6 +274,30 @@ export async function getStaticProps(
   const pdetail = await (async function () {
     const pdetail = Object.create(null);
 
+    const response1 = await axios.get(
+      "https://resource.pokemon-home.com/battledata/ranking/scvi" +
+        `/${contest["cId"]}/${contest["rule"]}/${contest["ts2"]}/pdetail-1`
+    );
+    Object.assign(pdetail, response1.data);
+
+    const response2 = await axios.get(
+      "https://resource.pokemon-home.com/battledata/ranking/scvi" +
+        `/${contest["cId"]}/${contest["rule"]}/${contest["ts2"]}/pdetail-2`
+    );
+    Object.assign(pdetail, response2.data);
+
+    const response3 = await axios.get(
+      "https://resource.pokemon-home.com/battledata/ranking/scvi" +
+        `/${contest["cId"]}/${contest["rule"]}/${contest["ts2"]}/pdetail-3`
+    );
+    Object.assign(pdetail, response3.data);
+
+    const response4 = await axios.get(
+      "https://resource.pokemon-home.com/battledata/ranking/scvi" +
+        `/${contest["cId"]}/${contest["rule"]}/${contest["ts2"]}/pdetail-4`
+    );
+    Object.assign(pdetail, response4.data);
+
     const response5 = await axios.get(
       "https://resource.pokemon-home.com/battledata/ranking/scvi" +
         `/${contest["cId"]}/${contest["rule"]}/${contest["ts2"]}/pdetail-5`
