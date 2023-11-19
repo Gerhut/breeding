@@ -287,7 +287,7 @@ export async function getStaticProps(
     Object.assign(pdetail, response6.data);
 
     for (const id in pdetail) {
-      if (Number(id) < 906) {
+      if (Number(id) < 1) {
         delete pdetail[id];
       } else {
         for (const form in pdetail[id]) {
