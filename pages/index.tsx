@@ -78,6 +78,9 @@ function getTerastalIcon(id: string) {
     case 17:
       t += "icon_terastal_type_fairy";
       break;
+    case 99:
+      t += "icon_terastal_type_stellar";
+      break;
     default:
       t += "icon_terastal_type_normal";
   }
@@ -329,7 +332,7 @@ export async function getStaticProps(
 
           const terastal = (temoti["terastal"] = temoti["terastal"][0]);
           if (terastal) {
-            terastal["name"] = type_[terastal["id"]];
+            terastal["name"] = (type_ as any)[terastal["id"]];
           } else {
             delete pdetail[id][form];
             continue;
