@@ -314,62 +314,58 @@ export async function getStaticProps(
     Object.assign(pdetail, response6.data);
 
     for (const id in pdetail) {
-      if (Number(id) < 1) {
+      for (const form in pdetail[id]) {
+        const temoti = (pdetail[id][form] = pdetail[id][form]["temoti"]);
+        delete temoti["pokemon"];
+
+        const zkn_form_key = `${id.padStart(3, "0")}_${form.padStart(
+          3,
+          "0"
+        )}`;
+        temoti["name"] = pokemon[Number(id) - 1];
+        if (zkn_form_key in zkn_form) {
+          temoti["form"] = zkn_form[zkn_form_key];
+        }
+
+        const terastal = (temoti["terastal"] = temoti["terastal"][0]);
+        if (terastal) {
+          terastal["name"] = (type_ as any)[terastal["id"]];
+        } else {
+          delete pdetail[id][form];
+          continue;
+        }
+
+        const tokusei = (temoti["tokusei"] = temoti["tokusei"][0]);
+        if (tokusei) {
+          tokusei["name"] = (tokusei_ as any)[tokusei["id"]];
+        } else {
+          delete pdetail[id][form];
+          continue;
+        }
+
+        const motimono = (temoti["motimono"] = temoti["motimono"][0]);
+        if (motimono) {
+          motimono["name"] = itemname[motimono["id"]];
+        } else {
+          delete pdetail[id][form];
+          continue;
+        }
+
+        const seikaku = (temoti["seikaku"] = temoti["seikaku"][0]);
+        if (seikaku) {
+          seikaku["name"] = (seikaku_ as any)[seikaku["id"]];
+        } else {
+          delete pdetail[id][form];
+          continue;
+        }
+
+        const wazas = (temoti["waza"] = temoti["waza"].slice(0, 4));
+        for (const waza of wazas) {
+          waza["name"] = (waza_ as any)[waza["id"]];
+        }
+      }
+      if (Object.keys(pdetail[id]).length === 0) {
         delete pdetail[id];
-      } else {
-        for (const form in pdetail[id]) {
-          const temoti = (pdetail[id][form] = pdetail[id][form]["temoti"]);
-          delete temoti["pokemon"];
-
-          const zkn_form_key = `${id.padStart(3, "0")}_${form.padStart(
-            3,
-            "0"
-          )}`;
-          temoti["name"] = pokemon[Number(id) - 1];
-          if (zkn_form_key in zkn_form) {
-            temoti["form"] = zkn_form[zkn_form_key];
-          }
-
-          const terastal = (temoti["terastal"] = temoti["terastal"][0]);
-          if (terastal) {
-            terastal["name"] = (type_ as any)[terastal["id"]];
-          } else {
-            delete pdetail[id][form];
-            continue;
-          }
-
-          const tokusei = (temoti["tokusei"] = temoti["tokusei"][0]);
-          if (tokusei) {
-            tokusei["name"] = (tokusei_ as any)[tokusei["id"]];
-          } else {
-            delete pdetail[id][form];
-            continue;
-          }
-
-          const motimono = (temoti["motimono"] = temoti["motimono"][0]);
-          if (motimono) {
-            motimono["name"] = itemname[motimono["id"]];
-          } else {
-            delete pdetail[id][form];
-            continue;
-          }
-
-          const seikaku = (temoti["seikaku"] = temoti["seikaku"][0]);
-          if (seikaku) {
-            seikaku["name"] = (seikaku_ as any)[seikaku["id"]];
-          } else {
-            delete pdetail[id][form];
-            continue;
-          }
-
-          const wazas = (temoti["waza"] = temoti["waza"].slice(0, 4));
-          for (const waza of wazas) {
-            waza["name"] = (waza_ as any)[waza["id"]];
-          }
-        }
-        if (Object.keys(pdetail[id]).length === 0) {
-          delete pdetail[id];
-        }
       }
     }
 
