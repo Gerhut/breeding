@@ -2,17 +2,12 @@ import axios from "axios";
 import { Fragment } from "react";
 import Image from "next/image";
 import { GetStaticPropsContext, GetStaticPropsResult } from "next";
-import localFont from "next/font/local";
 
 import pokemon from "./pokemon.json";
 import type_ from "./type.json";
 import tokusei_ from "./tokusei.json";
 import seikaku_ from "./seikaku.json";
 import waza_ from "./waza.json";
-
-const zpixFont = localFont({
-  src: "./zpix.ttf",
-});
 
 function getPokemonIcon(id: string, form: string) {
   return (
@@ -95,110 +90,112 @@ function getItemIcon(id: string) {
 }
 
 type Props = {
-  [id: string]: {
-    [form: string]: {
-      name: string;
-      form?: string;
-      terastal: {
-        id: string;
+  updated: string;
+  data: {
+    [id: string]: {
+      [form: string]: {
         name: string;
+        form?: string;
+        terastal: {
+          id: string;
+          name: string;
+        };
+        tokusei: {
+          id: string;
+          name: string;
+        };
+        motimono: {
+          id: string;
+          name: string;
+        };
+        seikaku: {
+          id: string;
+          name: string;
+        };
+        waza: {
+          id: string;
+          name: string;
+        }[];
       };
-      tokusei: {
-        id: string;
-        name: string;
-      };
-      motimono: {
-        id: string;
-        name: string;
-      };
-      seikaku: {
-        id: string;
-        name: string;
-      };
-      waza: {
-        id: string;
-        name: string;
-      }[];
     };
   };
 };
 
-export default function IndexPage(props: Props) {
+export default function IndexPage({ updated, data }: Props) {
   return (
-    <main className={`p-4 ${zpixFont.className}`}>
-      <table className="nes-table is-bordered mx-auto">
+    <main>
+      <h1 className="text-center">{updated}</h1>
+      <table>
         <tbody>
-          {Object.keys(props).map((id) =>
-            Object.keys(props[id]).map((form) => (
+          {Object.keys(data).map((id) =>
+            Object.keys(data[id]).map((form) => (
               <tr key={`${id}-${form}`}>
-                <td>
+                <th className="text-center">
                   <a
                     href={`https://wiki.52poke.com/wiki/${encodeURIComponent(
-                      props[id][form]["name"]
+                      data[id][form]["name"]
                     )}`}
                     target="_blank"
                     rel="noreferrer"
                   >
                     <Image
                       src={getPokemonIcon(id, form)}
-                      alt={props[id][form]["name"]}
+                      alt={data[id][form]["name"]}
                       width={64}
                       height={64}
-                      className="mx-auto"
+                      className="mx-auto mb-0"
                     />
-                    <h2 className="text-center">
-                      {props[id][form]["name"]}
-                      {props[id][form]["form"] !== undefined && (
-                        <span className="text-sm">
-                          <br />({props[id][form]["form"]})
-                        </span>
+                      {data[id][form]["name"]}
+                      {data[id][form]["form"] !== undefined && (
+                        <>
+                          <br />({data[id][form]["form"]})
+                        </>
                       )}
-                    </h2>
                   </a>
-                </td>
+                </th>
                 <td>
                   <a
                     href={`https://wiki.52poke.com/wiki/${encodeURIComponent(
-                      props[id][form]["terastal"]["name"]
+                      data[id][form]["terastal"]["name"]
                     )}`}
                     target="_blank"
                     rel="noreferrer"
                   >
                     <Image
-                      src={getTerastalIcon(props[id][form]["terastal"]["id"])}
-                      alt={props[id][form]["terastal"]["name"]}
+                      src={getTerastalIcon(data[id][form]["terastal"]["id"])}
+                      alt={data[id][form]["terastal"]["name"]}
                       width={16}
                       height={16}
-                      className="inline-block"
+                      className="inline-block mb-0 align-baseline"
                     />
-                    {props[id][form]["terastal"]["name"]}
+                    {data[id][form]["terastal"]["name"]}
                   </a>
                   <br />
                   <a
                     href={`https://wiki.52poke.com/wiki/${encodeURIComponent(
-                      props[id][form]["tokusei"]["name"]
+                      data[id][form]["tokusei"]["name"]
                     )}`}
                     target="_blank"
                     rel="noreferrer"
                   >
-                    {props[id][form]["tokusei"]["name"]}
+                    {data[id][form]["tokusei"]["name"]}
                   </a>
                   <br />
                   <a
                     href={`https://wiki.52poke.com/wiki/${encodeURIComponent(
-                      props[id][form]["motimono"]["name"]
+                      data[id][form]["motimono"]["name"]
                     )}`}
                     target="_blank"
                     rel="noreferrer"
                   >
                     <Image
-                      src={getItemIcon(props[id][form]["motimono"]["id"])}
-                      alt={props[id][form]["motimono"]["name"]}
+                      src={getItemIcon(data[id][form]["motimono"]["id"])}
+                      alt={data[id][form]["motimono"]["name"]}
                       width={16}
                       height={16}
-                      className="inline-block"
+                      className="inline-block mb-0 align-baseline"
                     />
-                    {props[id][form]["motimono"]["name"]}
+                    {data[id][form]["motimono"]["name"]}
                   </a>
                   <br />
                   <a
@@ -208,11 +205,11 @@ export default function IndexPage(props: Props) {
                     target="_blank"
                     rel="noreferrer"
                   >
-                    {props[id][form]["seikaku"]["name"]}
+                    {data[id][form]["seikaku"]["name"]}
                   </a>
                 </td>
                 <td>
-                  {props[id][form]["waza"].slice(0, 4).map((waza) => (
+                  {data[id][form]["waza"].slice(0, 4).map((waza) => (
                     <Fragment key={waza.id}>
                       <a
                         href={`https://wiki.52poke.com/wiki/${encodeURIComponent(
@@ -318,10 +315,7 @@ export async function getStaticProps(
         const temoti = (pdetail[id][form] = pdetail[id][form]["temoti"]);
         delete temoti["pokemon"];
 
-        const zkn_form_key = `${id.padStart(3, "0")}_${form.padStart(
-          3,
-          "0"
-        )}`;
+        const zkn_form_key = `${id.padStart(3, "0")}_${form.padStart(3, "0")}`;
         temoti["name"] = pokemon[Number(id) - 1];
         if (zkn_form_key in zkn_form) {
           temoti["form"] = zkn_form[zkn_form_key];
@@ -372,5 +366,5 @@ export async function getStaticProps(
     return pdetail;
   })();
 
-  return { props: pdetail };
+  return { props: { updated: new Date().toISOString(), data: pdetail } };
 }
