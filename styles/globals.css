@@ -1,3 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import "sakura.css/css/sakura-earthly.css";
+@import "sakura.css/css/sakura-vader.css" (prefers-color-scheme: dark);

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Fragment } from "react";
 import Image from "next/image";
-import { GetStaticPropsContext, GetStaticPropsResult } from "next";
+import { GetStaticProps } from "next";
 
 import pokemon from "./pokemon.json";
 import type_ from "./type.json";
@@ -124,8 +124,10 @@ type Props = {
 export default function IndexPage({ updated, data }: Props) {
   return (
     <main>
-      <h1 className="text-center">{updated}</h1>
       <table>
+        <caption>
+          <h1><code>{updated}</code></h1>
+        </caption>
         <tbody>
           {Object.keys(data).map((id) =>
             Object.keys(data[id]).map((form) => (
@@ -145,12 +147,12 @@ export default function IndexPage({ updated, data }: Props) {
                       height={64}
                       className="mx-auto mb-0"
                     />
-                      {data[id][form]["name"]}
-                      {data[id][form]["form"] !== undefined && (
-                        <>
-                          <br />({data[id][form]["form"]})
-                        </>
-                      )}
+                    <div>{data[id][form]["name"]}</div>
+                    {data[id][form]["form"] !== undefined && (
+                      <div>
+                        <small>({data[id][form]["form"]})</small>
+                      </div>
+                    )}
                   </a>
                 </th>
                 <td>
@@ -233,9 +235,7 @@ export default function IndexPage({ updated, data }: Props) {
   );
 }
 
-export async function getStaticProps(
-  context: GetStaticPropsContext
-): Promise<GetStaticPropsResult<Props>> {
+export const getStaticProps: GetStaticProps<Props> = async (context) => {
   const itemname = await (async function () {
     const response = await axios.get(
       "https://resource.pokemon-home.com/battledata/json/itemname_sc.json"
@@ -367,4 +367,4 @@ export async function getStaticProps(
   })();
 
   return { props: { updated: new Date().toISOString(), data: pdetail } };
-}
+};
