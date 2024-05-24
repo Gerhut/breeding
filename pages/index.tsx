@@ -90,8 +90,20 @@ function getItemIcon(id: string) {
 }
 
 type Props = {
-  updated: string;
-  data: {
+  contest: {
+    cId: string;
+    name: string;
+    start: string;
+    end: string;
+    cnt: number;
+    rankCnt: number;
+    rule: number;
+    season: number;
+    rst: number;
+    ts1: number;
+    ts2: number;
+  };
+  pdetail: {
     [id: string]: {
       [form: string]: {
         name: string;
@@ -121,36 +133,40 @@ type Props = {
   };
 };
 
-export default function IndexPage({ updated, data }: Props) {
+export default function IndexPage({ contest, pdetail }: Props) {
   return (
     <main>
       <table>
         <caption>
-          <h1><code>{updated}</code></h1>
+          <h1>
+            <code>
+              {contest.name} @ {new Date(contest.ts2 * 1000).toISOString()}
+            </code>
+          </h1>
         </caption>
         <tbody>
-          {Object.keys(data).map((id) =>
-            Object.keys(data[id]).map((form) => (
+          {Object.keys(pdetail).map((id) =>
+            Object.keys(pdetail[id]).map((form) => (
               <tr key={`${id}-${form}`}>
                 <th className="text-center">
                   <a
                     href={`https://wiki.52poke.com/wiki/${encodeURIComponent(
-                      data[id][form]["name"]
+                      pdetail[id][form]["name"]
                     )}`}
                     target="_blank"
                     rel="noreferrer"
                   >
                     <Image
                       src={getPokemonIcon(id, form)}
-                      alt={data[id][form]["name"]}
+                      alt={pdetail[id][form]["name"]}
                       width={64}
                       height={64}
                       className="mx-auto mb-0"
                     />
-                    <div>{data[id][form]["name"]}</div>
-                    {data[id][form]["form"] !== undefined && (
+                    <div>{pdetail[id][form]["name"]}</div>
+                    {pdetail[id][form]["form"] !== undefined && (
                       <div>
-                        <small>({data[id][form]["form"]})</small>
+                        <small>({pdetail[id][form]["form"]})</small>
                       </div>
                     )}
                   </a>
@@ -158,46 +174,46 @@ export default function IndexPage({ updated, data }: Props) {
                 <td>
                   <a
                     href={`https://wiki.52poke.com/wiki/${encodeURIComponent(
-                      data[id][form]["terastal"]["name"]
+                      pdetail[id][form]["terastal"]["name"]
                     )}`}
                     target="_blank"
                     rel="noreferrer"
                   >
                     <Image
-                      src={getTerastalIcon(data[id][form]["terastal"]["id"])}
-                      alt={data[id][form]["terastal"]["name"]}
+                      src={getTerastalIcon(pdetail[id][form]["terastal"]["id"])}
+                      alt={pdetail[id][form]["terastal"]["name"]}
                       width={16}
                       height={16}
                       className="inline-block mb-0 align-baseline"
                     />
-                    {data[id][form]["terastal"]["name"]}
+                    {pdetail[id][form]["terastal"]["name"]}
                   </a>
                   <br />
                   <a
                     href={`https://wiki.52poke.com/wiki/${encodeURIComponent(
-                      data[id][form]["tokusei"]["name"]
+                      pdetail[id][form]["tokusei"]["name"]
                     )}`}
                     target="_blank"
                     rel="noreferrer"
                   >
-                    {data[id][form]["tokusei"]["name"]}
+                    {pdetail[id][form]["tokusei"]["name"]}
                   </a>
                   <br />
                   <a
                     href={`https://wiki.52poke.com/wiki/${encodeURIComponent(
-                      data[id][form]["motimono"]["name"]
+                      pdetail[id][form]["motimono"]["name"]
                     )}`}
                     target="_blank"
                     rel="noreferrer"
                   >
                     <Image
-                      src={getItemIcon(data[id][form]["motimono"]["id"])}
-                      alt={data[id][form]["motimono"]["name"]}
+                      src={getItemIcon(pdetail[id][form]["motimono"]["id"])}
+                      alt={pdetail[id][form]["motimono"]["name"]}
                       width={16}
                       height={16}
                       className="inline-block mb-0 align-baseline"
                     />
-                    {data[id][form]["motimono"]["name"]}
+                    {pdetail[id][form]["motimono"]["name"]}
                   </a>
                   <br />
                   <a
@@ -207,11 +223,11 @@ export default function IndexPage({ updated, data }: Props) {
                     target="_blank"
                     rel="noreferrer"
                   >
-                    {data[id][form]["seikaku"]["name"]}
+                    {pdetail[id][form]["seikaku"]["name"]}
                   </a>
                 </td>
                 <td>
-                  {data[id][form]["waza"].slice(0, 4).map((waza) => (
+                  {pdetail[id][form]["waza"].slice(0, 4).map((waza) => (
                     <Fragment key={waza.id}>
                       <a
                         href={`https://wiki.52poke.com/wiki/${encodeURIComponent(
@@ -259,55 +275,46 @@ export const getStaticProps: GetStaticProps<Props> = async (context) => {
     );
     const { list } = response.data;
 
+    let contest = null;
+
     for (const season in list) {
       for (const cId in list[season]) {
         const { rule, rst } = list[season][cId];
 
         if (rule !== 0) continue;
-        if (rst !== 0) continue;
+        if (rst === 0) continue;
 
-        return list[season][cId];
+        contest = list[season][cId];
       }
     }
+
+    return contest;
   })();
+
+  console.log({ contest });
 
   const pdetail = await (async function () {
     const pdetail = Object.create(null);
-
-    const response1 = await axios.get(
+    const baseUrl =
       "https://resource.pokemon-home.com/battledata/ranking/scvi" +
-        `/${contest["cId"]}/${contest["rule"]}/${contest["ts2"]}/pdetail-1`
-    );
+      `/${contest["cId"]}/${contest["rst"]}/${contest["ts2"]}`;
+
+    const response1 = await axios.get(`${baseUrl}/pdetail-1`);
     Object.assign(pdetail, response1.data);
 
-    const response2 = await axios.get(
-      "https://resource.pokemon-home.com/battledata/ranking/scvi" +
-        `/${contest["cId"]}/${contest["rule"]}/${contest["ts2"]}/pdetail-2`
-    );
+    const response2 = await axios.get(`${baseUrl}/pdetail-2`);
     Object.assign(pdetail, response2.data);
 
-    const response3 = await axios.get(
-      "https://resource.pokemon-home.com/battledata/ranking/scvi" +
-        `/${contest["cId"]}/${contest["rule"]}/${contest["ts2"]}/pdetail-3`
-    );
+    const response3 = await axios.get(`${baseUrl}/pdetail-3`);
     Object.assign(pdetail, response3.data);
 
-    const response4 = await axios.get(
-      "https://resource.pokemon-home.com/battledata/ranking/scvi" +
-        `/${contest["cId"]}/${contest["rule"]}/${contest["ts2"]}/pdetail-4`
-    );
+    const response4 = await axios.get(`${baseUrl}/pdetail-4`);
     Object.assign(pdetail, response4.data);
 
-    const response5 = await axios.get(
-      "https://resource.pokemon-home.com/battledata/ranking/scvi" +
-        `/${contest["cId"]}/${contest["rule"]}/${contest["ts2"]}/pdetail-5`
-    );
+    const response5 = await axios.get(`${baseUrl}/pdetail-5`);
     Object.assign(pdetail, response5.data);
 
-    const response6 = await axios.get(
-      "https://resource.pokemon-home.com/battledata/ranking/scvi" +
-        `/${contest["cId"]}/${contest["rule"]}/${contest["ts2"]}/pdetail-6`
-    );
+    const response6 = await axios.get(`${baseUrl}/pdetail-6`);
     Object.assign(pdetail, response6.data);
 
     for (const id in pdetail) {
@@ -366,5 +373,5 @@ export const getStaticProps: GetStaticProps<Props> = async (context) => {
     return pdetail;
   })();
 
-  return { props: { updated: new Date().toISOString(), data: pdetail } };
+  return { props: { contest, pdetail } };
 };
